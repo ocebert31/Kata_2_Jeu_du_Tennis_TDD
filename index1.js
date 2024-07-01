@@ -11,3 +11,37 @@ function assert(label, test) {
         console.log(`${label} ❌`)
     }
 }
+
+let gameWins = [];
+
+function playerWins(player) {
+    gameWins.push(player);
+}
+
+function calculateScore() {
+    let playerAScore = 0;
+    let playerBScore = 0;
+    gameWins.forEach(win => {
+        if(win === 'player A') {
+            playerAScore += 15;
+        } else if (win === 'player B') {
+            playerBScore += 15;
+        }
+    });
+    return `${playerAScore}-${playerBScore}`;
+}
+
+assert('0 points when the game starts', () => {
+    return calculateScore() === '0-0';
+});
+
+assert('15 points when the player wins the first time', () => {
+    playerWins('player A');
+    return calculateScore() === '15-0';
+}); 
+
+assert('15 points when the second player wins the second time', () => {
+    playerWins('player B');
+    return calculateScore() === '15-15';
+}); 
+
