@@ -38,6 +38,10 @@ function calculateScore() {
             playerBScore = 'A';
         } else if (win === 'player A' && playerAScore === 40 && playerBScore === 'A') {
             playerAScore = 'A';
+        } else if (win === 'player A' && playerAScore === 'A') {
+            playerAScore = 'Player A wins';
+        } else if (win === 'player B' && playerBScore === 'A') {
+            playerBScore = 'Player B wins';
         }
     });
     return result(playerAScore, playerBScore);
@@ -47,6 +51,10 @@ function calculateScore() {
 function result(playerAScore, playerBScore) {
     if (playerAScore === 'A' && playerBScore === 'A') {
         return 'Egalité';
+    } else if (playerAScore === 'Player A wins') {
+        return 'Player A wins';
+    } else if (playerBScore === 'Player B wins') {
+        return 'Player B wins';
     } else {
         return `${playerAScore}-${playerBScore}`;
     }
@@ -138,4 +146,34 @@ assert('when both players have an advantage but it is the first player who last 
     playerWins('player A');
     console.log(calculateScore())
     return calculateScore() === 'Egalité';
+});
+
+assert('when the first player wins', () => {
+    gameWins = [];
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    console.log(calculateScore())
+    return calculateScore() === 'Player A wins';
+});
+
+assert('when the second player wins', () => {
+    gameWins = [];
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player B');
+    console.log(calculateScore())
+    return calculateScore() === 'Player B wins';
 });
