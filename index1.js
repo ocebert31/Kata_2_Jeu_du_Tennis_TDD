@@ -1,6 +1,6 @@
 // il y a X set (manche)
 // Nombre de points gagnés : 15 | 30 | 40 
-// Si 2 joueurs sont execo à 40, le prochain qui marque aura avantage, et ce dernier devra encore marquer pour gagner 1 jeu (point)
+// Si 2 joueurs sont execo à 40, le prochain qui marque aura avantage, et ce dernier devra avoir un 2e avantage et marquer pour gagner 1 jeu (point)
 // Si 2 joueurs sont à 15-40, celui à 40 gagne automatiquement
 // But : Calculer le score d'un jeu
 
@@ -30,18 +30,18 @@ function calculateScore() {
             playerAScore += 15;
         } else if (win === 'player B' && playerBScore < 40) {
             playerBScore += 15;
-        } else if (win === 'player A' && playerAScore === 40 && playerBScore === 40) {
-            playerAScore = 'A';
-        } else if (win === 'player B' && playerAScore === 40 && playerBScore === 40) {
+        } else if (win === 'player B' && playerAScore === 'A' && playerBScore === 40 || win === 'player B' && playerAScore === 40 && playerBScore === 40) {
             playerBScore = 'A';
-        } else if (win === 'player B' && playerAScore === 'A' && playerBScore === 40) {
-            playerBScore = 'A';
-        } else if (win === 'player A' && playerAScore === 40 && playerBScore === 'A') {
+        } else if (win === 'player A' && playerAScore === 40 && playerBScore === 'A' || win === 'player A' && playerAScore === 40 && playerBScore === 40) {
             playerAScore = 'A';
-        } else if (win === 'player A' && playerAScore === 'A') {
+        } else if (win === 'player A' && (playerAScore === 'A' && playerBScore === 40 || playerBScore < 40)) {
             playerAScore = 'Player A wins';
-        } else if (win === 'player B' && playerBScore === 'A') {
+        } else if (win === 'player B' && (playerBScore === 'A' && playerAScore === 40 || playerAScore < 40)) {
             playerBScore = 'Player B wins';
+        } else if (win === 'player A' && playerAScore === 'A' && playerBScore === 'A') {
+            playerBScore = 40;
+        } else if (win === 'player B' && playerAScore === 'A' && playerBScore === 'A') {
+            playerAScore = 40;
         }
     });
     return result(playerAScore, playerBScore);
@@ -50,7 +50,7 @@ function calculateScore() {
 
 function result(playerAScore, playerBScore) {
     if (playerAScore === 'A' && playerBScore === 'A') {
-        return 'Egalité';
+        return 'Deuce';
     } else if (playerAScore === 'Player A wins') {
         return 'Player A wins';
     } else if (playerBScore === 'Player B wins') {
@@ -131,7 +131,7 @@ assert('when both players have an advantage but it is the second player who last
     playerWins('player A');
     playerWins('player B');
     console.log(calculateScore())
-    return calculateScore() === 'Egalité';
+    return calculateScore() === 'Deuce';
 });
 
 assert('when both players have an advantage but it is the first player who last had the advantage', () => {
@@ -145,10 +145,11 @@ assert('when both players have an advantage but it is the first player who last 
     playerWins('player B');
     playerWins('player A');
     console.log(calculateScore())
-    return calculateScore() === 'Egalité';
+    console.log(gameWins)
+    return calculateScore() === 'Deuce';
 });
 
-assert('when the first player wins', () => {
+assert('can have successive advantages and ties when finally first player wins', () => {
     gameWins = [];
     playerWins('player A');
     playerWins('player B');
@@ -160,10 +161,38 @@ assert('when the first player wins', () => {
     playerWins('player B');
     playerWins('player A');
     console.log(calculateScore())
+    return calculateScore() === 'A-40';
+});
+
+assert('can have successive advantages and ties when finally second player wins', () => {
+    gameWins = [];
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player B');
+    console.log(calculateScore())
+    return calculateScore() === '40-A';
+});
+
+assert('when the first player wins after a draw', () => {
+    gameWins = [];
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player B');
+    playerWins('player A');
+    playerWins('player A');
     return calculateScore() === 'Player A wins';
 });
 
-assert('when the second player wins', () => {
+assert('when the second player wins a draw', () => {
     gameWins = [];
     playerWins('player A');
     playerWins('player B');
@@ -171,9 +200,27 @@ assert('when the second player wins', () => {
     playerWins('player B');
     playerWins('player A');
     playerWins('player B');
+    playerWins('player B');
+    playerWins('player B');
+    return calculateScore() === 'Player B wins';
+});
+
+assert('when the first player wins and the second player had less 40 points', () => {
+    gameWins = [];
     playerWins('player A');
+    playerWins('player B')
+    playerWins('player A');
+    playerWins('player A');
+    playerWins('player A');
+    return calculateScore() === 'Player A wins';
+});
+
+assert('when the second player wins and the first player had less 40 points', () => {
+    gameWins = [];
+    playerWins('player B');
+    playerWins('player A')
     playerWins('player B');
     playerWins('player B');
-    console.log(calculateScore())
+    playerWins('player B');
     return calculateScore() === 'Player B wins';
 });
