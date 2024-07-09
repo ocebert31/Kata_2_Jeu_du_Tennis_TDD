@@ -22,33 +22,41 @@ function calculateScore() {
     let playerAScore = 0;
     let playerBScore = 0;
     gameWins.forEach(win => {
-         if (win === 'player A' && playerAScore === 30) {
-            playerAScore += 10;
-        } else if (win === 'player B' && playerBScore === 30) {
-            playerBScore += 10;
-        } else if(win === 'player A' && playerAScore < 40) {
-            playerAScore += 15;
-        } else if (win === 'player B' && playerBScore < 40) {
-            playerBScore += 15;
-        } else if (win === 'player B' && playerBScore === 40 && (playerAScore === 'A' || playerAScore === 40)) {
-            playerBScore = 'A';
-        } else if (win === 'player A' && playerAScore === 40 && ( playerBScore === 'A' || playerBScore === 40)) {
-            playerAScore = 'A';
-        } else if (win === 'player A' && (playerAScore === 'A' && playerBScore === 40 || playerBScore < 40)) {
-            playerAScore = 'Player A wins';
-        } else if (win === 'player B' && (playerBScore === 'A' && playerAScore === 40 || playerAScore < 40)) {
-            playerBScore = 'Player B wins';
-        } else if (win === 'player A' && playerAScore === 'A' && playerBScore === 'A') {
-            playerBScore = 40;
-        } else if (win === 'player B' && playerAScore === 'A' && playerBScore === 'A') {
-            playerAScore = 40;
+        if (win === 'player A') {
+            playerAScore = computePlayerAScore(playerAScore, playerBScore);
+        } else  if(win === 'player B') {
+            playerBScore = computePlayerBScore(playerAScore, playerBScore);
         }
     });
     return result(playerAScore, playerBScore);
 }
 
-function playerScoreIs40() {
-    
+function computePlayerAScore(playerAScore, playerBScore) {
+    if (playerAScore < 40 && playerAScore !== 30) {
+        return playerAScore + 15;
+    } else if (playerAScore === 30) {
+        return playerAScore + 10;
+    } else if (playerAScore === 40 && ( playerBScore === 'A' || playerBScore === 40)) {
+        return 'A';
+    } else if (playerAScore === 'A' && playerBScore === 40 || playerBScore < 40) {
+        return 'Player A wins';
+    } else if (playerAScore === 'A' && playerBScore === 'A') {
+        return 'pA-A et pB-40';
+    } 
+}
+
+function computePlayerBScore(playerAScore, playerBScore) {
+    if (playerBScore < 40 && playerBScore !== 30) {
+        return playerBScore + 15;
+    } else if (playerBScore === 30) {
+        return playerBScore + 10;
+    } else  if ( playerBScore === 40 && (playerAScore === 'A' || playerAScore === 40)) {
+        return 'A';
+    } else if (playerBScore === 'A' && playerAScore === 40 || playerAScore < 40) {
+        return 'Player B wins';
+    } else if (playerAScore === 'A' && playerBScore === 'A') {
+        return 'pA-40 et pB-A';
+    }
 }
 
 function result(playerAScore, playerBScore) {
@@ -58,11 +66,14 @@ function result(playerAScore, playerBScore) {
         return 'Player A wins';
     } else if (playerBScore === 'Player B wins') {
         return 'Player B wins';
+    } else if (playerBScore === 'pA-40 et pB-A' && playerAScore === 'A') {
+        return '40-A';
+    } else if (playerAScore === 'pA-A et pB-40' && playerBScore === 'A') {
+        return 'A-40';
     } else {
         return `${playerAScore}-${playerBScore}`;
     }
 }
-
 
 assert('0 points when the game starts', () => {
     gameWins = [];
